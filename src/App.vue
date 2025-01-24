@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col min-h-screen bg-gray-100">
-    <nav class="bg-white shadow-lg">
+    <nav v-if="!requiresAuth" class="bg-white shadow-lg">
       <div class="container mx-auto p-4">
         <div class="flex justify-between items-center">
           <router-link to="/" class="text-xl font-bold">Albums App</router-link>

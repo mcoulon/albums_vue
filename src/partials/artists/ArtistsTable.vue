@@ -1,25 +1,75 @@
-<template></template>
+<template>
+  <div v-if="loading" class="text-center py-4">
+    <span class="text-gray-600">Loading...</span>
+  </div>
+
+  <div v-else-if="error" class="text-red-500 text-center py-4">
+    {{ error }}
+  </div>
+
+  <div v-else>
+    <div class="bg-white shadow-md rounded my-6">
+      <table class="min-w-full table-auto">
+        <thead>
+          <tr
+            class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal"
+          >
+            <th class="py-3 px-6 text-left">Name</th>
+            <th class="py-3 px-6 text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="text-gray-600 text-sm font-light">
+          <tr
+            v-for="artist in artists"
+            :key="artist.id"
+            class="border-b border-gray-200 hover:bg-gray-100"
+          >
+            <td class="py-3 px-6 text-left whitespace-nowrap">
+              {{ artist.name }}
+            </td>
+            <td class="py-3 px-6 text-center">
+              <div class="flex item-center justify-center">
+                <router-link
+                  :to="`/artists/${artist.id}/edit`"
+                  class="text-blue-500 hover:text-blue-700 mx-2"
+                >
+                  Edit
+                </router-link>
+                <button
+                  @click="handleDelete(artist.id)"
+                  class="text-red-500 hover:text-red-700 mx-2"
+                >
+                  Delete
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <Pagination
+    :total-pages="store.meta.last_page || 1"
+    :current-page="store.current_page"
+    :per-page="store.per_page"
+    @page-changed="onPageChange"
+  />
+</template>
 <script setup>
 import { useArtistsStore } from "../../stores/artists";
-import { ref } from "vue";
+import { ref, computed } from "vue";
+import Pagination from "../../components/Pagination.vue";
 
-const artistsStore = useArtistsStore();
+const store = useArtistsStore();
 
-const artists = ref([]);
-const loading = ref(false);
+const loading = computed(() => store.loading);
+const error = computed(() => store.error);
+const artists = computed(() => store.artists);
 
-const fetchArtists = async () => {
-  loading.value = true;
-  try {
-    await artistsStore.fetchArtists();
-    artists.value = artistsStore.artists;
-    console.log(artists.value);
-  } catch (error) {
-    console.log(error);
-  } finally {
-    loading.value = false;
-  }
+const onPageChange = async (page) => {
+  store.current_page = page;
+  await store.fetchArtists();
 };
 
-fetchArtists();
+store.fetchArtists();
 </script>
