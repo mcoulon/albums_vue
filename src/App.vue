@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col min-h-screen bg-gray-100">
-    <nav v-if="!requiresAuth" class="bg-white shadow-lg">
+    <nav v-if="requiresAuth" class="bg-white shadow-lg">
       <div class="container mx-auto p-4">
         <div class="flex justify-between items-center">
           <router-link to="/" class="text-xl font-bold">Albums App</router-link>
@@ -20,7 +20,12 @@
             <router-link to="/tracks" class="hover:text-blue-600"
               >Tracks</router-link
             >
-            <button class="text-red-600 hover:text-red-800">Logout</button>
+            <button
+              @click="handleLogout"
+              class="text-red-600 hover:text-red-800"
+            >
+              Logout
+            </button>
           </div>
         </div>
       </div>
@@ -37,5 +42,38 @@
 </template>
 
 <script setup>
-import { RouterView } from "vue-router";
+import { RouterView, useRoute, useRouter } from "vue-router";
+import { useAuthStore } from "./stores/auth";
+import { computed, watch } from "vue";
+
+const authStore = useAuthStore();
+const router = useRouter();
+const route = useRoute();
+
+const requiresAuth = computed(() => {
+  const publicRoutes = ["/login", "/register"];
+  return !publicRoutes.includes(route.path);
+});
+
+// Gérer la déconnexion
+const handleLogout = async () => {
+  try {
+    await authStore.logout();
+    router.push("/login");
+  } catch (error) {
+    console.error("Logout error:", error);
+  }
+};
+
+// Observer les changements de route pour vérifier l'authentification
+watch(
+  () => route.path,
+  async (newPath) => {
+    if (requiresAuth.value && !authStore.token) {
+      // Rediriger vers la page de connexion si l'utilisateur n'est pas authentifié
+      router.push("/login");
+    }
+  },
+  { immediate: true }
+);
 </script>

@@ -4,40 +4,53 @@ import ApiRequest from '../services/api'
 export const useAuthStore = defineStore('auth', {
     state: () => ({
         token: sessionStorage.getItem('token'),
-        user: null,
+        user: JSON.parse(localStorage.getItem('user')),
         loading: false,
         error: null
     }),
 
+    getters: {
+        isAuthenticated: (state) => !!state.token
+    },
+
     actions: {
+        setToken(token) {
+            this.token = token
+            if (token) {
+                sessionStorage.setItem('token', token)
+            } else {
+                sessionStorage.removeItem('token')
+            }
+        },
+
         async register(credentials) {
             try {
                 const response = await ApiRequest.post('/register', credentials)
-                this.token = response.data.token
+                this.setToken(response.data.token)
+                return true
             } catch (error) {
-                console.log(error)
+                console.error('Register error:', error)
+                throw error
             }
         },
+
         async login(credentials) {
             this.loading = true
             this.error = null
             try {
                 const response = await ApiRequest.post('/login', credentials)
-                console.log('Login response:', response.data)
-
                 const responseData = response.data.data
-                this.token = responseData?.access_token || responseData?.token
-                this.user = responseData?.user || null
 
-                if (this.token) {
-                    sessionStorage.setItem('token', this.token)
-                    if (this.user) {
-                        localStorage.setItem('user', JSON.stringify(this.user))
-                    }
-                    return true
-                } else {
-                    throw new Error('No token received in response')
+                const token = responseData?.access_token || responseData?.token
+                const user = responseData?.user || null
+
+                this.setToken(token)
+                if (user) {
+                    this.user = user
+                    localStorage.setItem('user', JSON.stringify(user))
                 }
+
+                return true
             } catch (error) {
                 console.error('Login error:', error)
                 this.error = error.response?.data?.message || 'Login failed'
@@ -46,15 +59,18 @@ export const useAuthStore = defineStore('auth', {
                 this.loading = false
             }
         },
+
         async logout() {
             try {
-                const response = await ApiRequest.post('/logout')
-                this.token = null
-                this.user = null
-                sessionStorage.removeItem('token')
-                localStorage.removeItem('user')
+                if (this.token) {
+                    await ApiRequest.post('/logout')
+                }
             } catch (error) {
-                console.log(error)
+                console.error('Logout error:', error)
+            } finally {
+                this.setToken(null)
+                this.user = null
+                localStorage.removeItem('user')
             }
         }
     }

@@ -78,15 +78,22 @@ const email = ref("");
 const password = ref("");
 
 const handleSubmit = async () => {
+  loading.value = true;
+  error.value = null;
+
   try {
     await authStore.login({
       email: email.value,
       password: password.value,
     });
-
+    await new Promise((resolve) => setTimeout(resolve, 100));
     router.push("/");
   } catch (err) {
     console.error("Login error in component:", err);
+    error.value =
+      err.response?.data?.message || "An error occurred during login";
+  } finally {
+    loading.value = false;
   }
 };
 </script>
