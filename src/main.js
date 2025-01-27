@@ -12,16 +12,13 @@ import ArtistsList from './views/artists/ArtistsList.vue'
 import AlbumsList from './views/albums/AlbumsList.vue'
 import GenresList from './views/genres/GenresList.vue'
 
-const app = createApp(App)
-
-const pinia = createPinia()
-
 const router = createRouter({
     history: createWebHistory(),
     routes: [
         {
             path: '/login',
             component: Login,
+            name: 'login',
             meta: {
                 requiresAuth: false
             }
@@ -29,6 +26,7 @@ const router = createRouter({
         {
             path: '/register',
             component: Register,
+            name: 'register',
             meta: {
                 requiresAuth: false
             }
@@ -36,6 +34,7 @@ const router = createRouter({
         {
             path: '/',
             component: Dashboard,
+            name: 'dashboard',
             meta: {
                 requiresAuth: true
             }
@@ -43,6 +42,7 @@ const router = createRouter({
         {
             path: '/mediatypes',
             component: MediatypesList,
+            name: 'mediatypes',
             meta: {
                 requiresAuth: true
             }
@@ -50,20 +50,7 @@ const router = createRouter({
         {
             path: '/tracks',
             component: TracksList,
-            meta: {
-                requiresAuth: true
-            }
-        },
-        {
-            path: '/genres',
-            component: GenresList,
-            meta: {
-                requiresAuth: true
-            }
-        },
-        {
-            path: '/albums',
-            component: AlbumsList,
+            name: 'tracks',
             meta: {
                 requiresAuth: true
             }
@@ -71,12 +58,45 @@ const router = createRouter({
         {
             path: '/artists',
             component: ArtistsList,
+            name: 'artists',
+            meta: {
+                requiresAuth: true
+            }
+        },
+        {
+            path: '/albums',
+            component: AlbumsList,
+            name: 'albums',
+            meta: {
+                requiresAuth: true
+            }
+        },
+        {
+            path: '/genres',
+            component: GenresList,
+            name: 'genres',
             meta: {
                 requiresAuth: true
             }
         }
     ]
 })
+
+router.beforeEach((to, from, next) => {
+    const token = sessionStorage.getItem('token')
+
+    if (to.meta.requiresAuth && !token) {
+        next({ name: 'login' })
+    } else if (!to.meta.requiresAuth && token) {
+        next({ name: 'dashboard' })
+    } else {
+        next()
+    }
+})
+
+const pinia = createPinia()
+const app = createApp(App)
+
 app.use(pinia)
 app.use(router)
 app.mount('#app')
