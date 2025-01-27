@@ -5,12 +5,25 @@
         <div class="flex justify-between items-center">
           <router-link to="/" class="text-xl font-bold">Albums App</router-link>
           <div class="flex items-center space-x-4">
-            <router-link to="/artists" class="hover:text-blue-600">Artists</router-link>
-            <router-link to="/albums" class="hover:text-blue-600">Albums</router-link>
-            <router-link to="/genres" class="hover:text-blue-600">Genres</router-link>
-            <router-link to="/mediatypes" class="hover:text-blue-600">Media Types</router-link>
-            <router-link to="/tracks" class="hover:text-blue-600">Tracks</router-link>
-            <button @click="handleLogout" class="text-red-600 hover:text-red-800">
+            <router-link to="/artists" class="hover:text-blue-600"
+              >Artists</router-link
+            >
+            <router-link to="/albums" class="hover:text-blue-600"
+              >Albums</router-link
+            >
+            <router-link to="/genres" class="hover:text-blue-600"
+              >Genres</router-link
+            >
+            <router-link to="/mediatypes" class="hover:text-blue-600"
+              >Media Types</router-link
+            >
+            <router-link to="/tracks" class="hover:text-blue-600"
+              >Tracks</router-link
+            >
+            <button
+              @click="handleLogout"
+              class="text-red-600 hover:text-red-800"
+            >
               Logout
             </button>
           </div>

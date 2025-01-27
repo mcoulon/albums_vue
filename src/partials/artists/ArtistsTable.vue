@@ -36,6 +36,14 @@
                   Edit
                 </router-link>
                 <button
+                  v-if="artist.deleted_at"
+                  @click="handleRestore(artist.id)"
+                  class="text-green-500 hover:text-green-700 mx-2"
+                >
+                  Restore
+                </button>
+                <button
+                  v-else
                   @click="handleDelete(artist.id)"
                   class="text-red-500 hover:text-red-700 mx-2"
                 >
@@ -69,6 +77,18 @@ const artists = computed(() => store.artists);
 const onPageChange = async (page) => {
   store.current_page = page;
   await store.fetchArtists();
+};
+
+const handleDelete = async (id) => {
+  if (confirm("Are you sure you want to delete this artist?")) {
+    await store.deleteArtist(id);
+  }
+};
+
+const handleRestore = async (id) => {
+  if (confirm("Are you sure you want to restore this artist?")) {
+    await store.restoreArtist(id);
+  }
 };
 
 store.fetchArtists();

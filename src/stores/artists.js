@@ -24,6 +24,38 @@ export const useArtistsStore = defineStore('artists', {
             } finally {
                 this.loading = false
             }
+        },
+        async addArtist(data) {
+            try {
+                await ApiRequest.post('/artists', data)
+                await this.fetchArtists()
+            } catch (error) {
+                console.log(error)
+            }
+        },
+        async updateArtist(id, data) {
+            try {
+                await ApiRequest.put(`/artists/${id}`, data)
+                await this.fetchArtists()
+            } catch (error) {
+                console.log(error)
+            }
+        },
+        async deleteArtist(id) {
+            try {
+                await ApiRequest.delete(`/artists/${id}`)
+                await this.fetchArtists()
+            } catch (error) {
+                console.log(error)
+            }
+        },
+        async restoreArtist(id) {
+            try {
+                await ApiRequest.patch(`/artists/${id}/restore`)
+                await this.fetchArtists()
+            } catch (error) {
+                console.log(error)
+            }
         }
     }
 })

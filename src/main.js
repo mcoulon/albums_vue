@@ -9,6 +9,7 @@ import Dashboard from './Dashboard.vue'
 import MediatypesList from './views/mediatypes/MediatypesList.vue'
 import TracksList from './views/tracks/TracksList.vue'
 import ArtistsList from './views/artists/ArtistsList.vue'
+import ArtistsForm from './views/artists/ArtistsForm.vue'
 import AlbumsList from './views/albums/AlbumsList.vue'
 import GenresList from './views/genres/GenresList.vue'
 
@@ -59,6 +60,22 @@ const router = createRouter({
             path: '/artists',
             component: ArtistsList,
             name: 'artists',
+            meta: {
+                requiresAuth: true
+            }
+        },
+        {
+            path: '/artists/:id/edit',
+            component: ArtistsForm,
+            name: 'editArtist',
+            meta: {
+                requiresAuth: true
+            }
+        },
+        {
+            path: '/artists/new',
+            component: ArtistsForm,
+            name: 'createArtist',
             meta: {
                 requiresAuth: true
             }
