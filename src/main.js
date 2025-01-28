@@ -11,6 +11,7 @@ import TracksList from './views/tracks/TracksList.vue'
 import ArtistsList from './views/artists/ArtistsList.vue'
 import ArtistsForm from './views/artists/ArtistsForm.vue'
 import AlbumsList from './views/albums/AlbumsList.vue'
+import AlbumsForm from './views/albums/AlbumsForm.vue'
 import GenresList from './views/genres/GenresList.vue'
 
 const router = createRouter({
@@ -83,7 +84,23 @@ const router = createRouter({
         {
             path: '/albums',
             component: AlbumsList,
-            name: 'albums',
+            name: 'albums.index',
+            meta: {
+                requiresAuth: true
+            }
+        },
+        {
+            path: '/albums/new',
+            component: AlbumsForm,
+            name: 'albums.create',
+            meta: {
+                requiresAuth: true
+            }
+        },
+        {
+            path: '/albums/:id/edit',
+            component: AlbumsForm,
+            name: 'albums.edit',
             meta: {
                 requiresAuth: true
             }
